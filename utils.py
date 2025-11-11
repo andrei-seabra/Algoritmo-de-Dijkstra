@@ -1,5 +1,8 @@
 import math, heapq
 
+def tool(action_text: str):
+    print(action_text)
+
 def dijkstra(adjacencyList, source):
     distance = {vertex: math.inf for vertex in adjacencyList}
     previous = {vertex: None for vertex in adjacencyList}
