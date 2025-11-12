@@ -2,6 +2,7 @@ from ui_builder import TopMenu, GraphEditor, Sidebar
 from tkinter import *
 from tkinter import messagebox
 from utils import dijkstra
+import random
 
 class DijkstraLab(Tk):
     def __init__(self):
@@ -43,39 +44,106 @@ class DijkstraLab(Tk):
         self.mode = mode
 
     def generate_graph(self):
-        """Gera um grafo de exemplo."""
+        """Gera um grafo aleatório."""
         self.clear_all()
         
-        # Cria grafo de exemplo
-        coords = [(150, 150), (350, 120), (550, 180), (400, 320), (200, 300)]
-        labels = []
-        for (x, y) in coords:
-            # Gera label manualmente
-            i = self.next_node_id - 1
-            s = ''
-            while True:
-                s = chr(ord('A') + (i % 26)) + s
-                i = i // 26 - 1
-                if i < 0:
-                    break
-            self.next_node_id += 1
-            
-            self.nodes[s] = {'pos': (x, y)}
-            labels.append(s)
+        # Número aleatório de nós (entre 4 e 8)
+        num_nodes = random.randint(4, 8)
         
-        # Cria arestas
-        if len(labels) >= 5:
-            edge_list = [
-                (labels[0], labels[1], 2.0),
-                (labels[1], labels[2], 1.5),
-                (labels[2], labels[3], 2.2),
-                (labels[0], labels[4], 3.1),
-                (labels[4], labels[3], 1.0)
-            ]
+        # Gera posições aleatórias para os nós, evitando sobreposição
+        labels = []
+        margin = 60
+        min_distance = 100  # Distância mínima entre nós
+        
+        for _ in range(num_nodes):
+            attempts = 0
+            while attempts < 50:  # Tenta 50 vezes para encontrar uma posição válida
+                x = random.randint(margin, 980 - margin)
+                y = random.randint(margin, 620 - margin)
+                
+                # Verifica se está longe o suficiente dos outros nós
+                valid = True
+                for other_label in labels:
+                    ox, oy = self.nodes[other_label]['pos']
+                    dist = ((x - ox)**2 + (y - oy)**2)**0.5
+                    if dist < min_distance:
+                        valid = False
+                        break
+                
+                if valid:
+                    # Gera label
+                    i = self.next_node_id - 1
+                    s = ''
+                    while True:
+                        s = chr(ord('A') + (i % 26)) + s
+                        i = i // 26 - 1
+                        if i < 0:
+                            break
+                    self.next_node_id += 1
+                    
+                    self.nodes[s] = {'pos': (x, y)}
+                    labels.append(s)
+                    break
+                
+                attempts += 1
             
-            for u, v, w in edge_list:
+            # Se não conseguiu achar posição válida após 50 tentativas, coloca em grade
+            if attempts >= 50:
+                i = self.next_node_id - 1
+                s = ''
+                while True:
+                    s = chr(ord('A') + (i % 26)) + s
+                    i = i // 26 - 1
+                    if i < 0:
+                        break
+                self.next_node_id += 1
+                
+                row = len(labels) // 3
+                col = len(labels) % 3
+                x = 150 + col * 250
+                y = 150 + row * 200
+                self.nodes[s] = {'pos': (x, y)}
+                labels.append(s)
+        
+        # Gera arestas aleatórias
+        # Garante conectividade criando uma árvore geradora primeiro
+        available = labels[1:]
+        connected = [labels[0]]
+        
+        while available:
+            # Conecta um nó disponível a um nó já conectado
+            u = random.choice(connected)
+            v = available.pop(random.randint(0, len(available) - 1))
+            w = round(random.uniform(0.5, 5.0), 1)
+            
+            self.edges.append({'u': u, 'v': v, 'w': w})
+            if not self.directed:
+                self.edges.append({'u': v, 'v': u, 'w': w})
+            
+            connected.append(v)
+        
+        # Adiciona arestas extras aleatórias (30-60% de arestas extras possíveis)
+        max_extra_edges = (num_nodes * (num_nodes - 1)) // 2 - (num_nodes - 1)
+        num_extra = random.randint(int(max_extra_edges * 0.3), int(max_extra_edges * 0.6))
+        
+        for _ in range(num_extra):
+            u = random.choice(labels)
+            v = random.choice(labels)
+            
+            # Evita auto-loops e arestas duplicadas
+            if u == v:
+                continue
+            
+            # Verifica se a aresta já existe
+            exists = False
+            for e in self.edges:
+                if e['u'] == u and e['v'] == v:
+                    exists = True
+                    break
+            
+            if not exists:
+                w = round(random.uniform(0.5, 5.0), 1)
                 self.edges.append({'u': u, 'v': v, 'w': w})
-                # Se não for direcionado, adiciona aresta reversa
                 if not self.directed:
                     self.edges.append({'u': v, 'v': u, 'w': w})
         
