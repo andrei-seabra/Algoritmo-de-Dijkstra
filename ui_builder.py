@@ -445,6 +445,8 @@ class Sidebar(Frame):
         if self.app.graph_editor:
             self.app.graph_editor.redraw_all()
 
+        self.app.clear_all()
+
     def create_dijkstra_section(self, vertices: list):
         self.dijkstra_section = self.create_section('Dijkstra')
 

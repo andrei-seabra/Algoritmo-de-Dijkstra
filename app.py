@@ -1,5 +1,6 @@
 from ui_builder import TopMenu, GraphEditor, Sidebar
 from tkinter import *
+from settings import *
 from tkinter import messagebox
 from utils import dijkstra
 import random
@@ -181,7 +182,25 @@ class DijkstraLab(Tk):
         source_label = self.sidebar.source_var.get()
         
         if not source_label or source_label not in self.nodes:
-            messagebox.showinfo('Dijkstra', 'Selecione um vértice válido como origem.')
+            alert_box = Tk()
+            alert_box.iconbitmap('assets/icon.ico')
+            alert_box.resizable(False, False)
+            alert_box.geometry('320x180')
+            alert_box.title('DijkstraLab')
+
+            container = Frame(alert_box, bg=LIGHT_TURQUOISE)
+            container.pack(fill='both', expand=True)
+
+            label = Label(container, font=FONT_FAMILY, text='Selecione um vértice válido como origem.', bg=LIGHT_TURQUOISE, fg=LIGHT_GRAY)
+            label.grid(row=0, column=0, padx=25, pady=35)
+
+            def close_alert():
+                alert_box.destroy()
+
+            button = Button(container, text='Ok', bd=0, font=FONT_FAMILY, fg=LIGHT_GRAY, activeforeground=LIGHT_GRAY, bg=DARK_TURQUOISE, activebackground=DARK_TURQUOISE, command=close_alert)
+            button.grid(row=1, column=0, padx=50, ipadx=15, ipady=7)
+
+            alert_box.mainloop()
             return
 
         # Constrói lista de adjacência
