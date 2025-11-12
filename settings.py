@@ -9,3 +9,12 @@ FONT_FAMILY = ('Inter', 10, 'bold')
 
 NODE_RAY = 18
 EDGE_WIDTH = 2
+
+ANIMATION_SPEED = 5
+
+SELECT_MODE = 'select'
+MOVE_MODE = 'move'
+ADD_EDGE = 'add_edge'
+ADD_VERTEX = 'add_vertex'
+EDIT_EDGE = 'edit_edge'
+DELETE_MODE = 'delete'
