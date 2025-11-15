@@ -171,12 +171,38 @@ class GraphEditor(Frame):
                 u, v = edge
                 try:
                     current_w = self.get_edge_weight(u, v) or 1.0
-                    new_w = simpledialog.askfloat('Editar peso', f'Peso para {u} -> {v}:', initialvalue=current_w)
-                    if new_w is not None:
-                        self.set_edge_weight(u, v, float(new_w))
-                        # Se não for direcionado, atualiza aresta reversa
-                        if not self.app.directed:
-                            self.set_edge_weight(v, u, float(new_w))
+
+                    alert_box = Tk()
+                    alert_box.iconbitmap('assets/icon.ico')
+                    alert_box.resizable(False, False)
+                    alert_box.geometry('320x180')
+                    alert_box.title('DijkstraLab')
+
+                    container = Frame(alert_box, bg=LIGHT_TURQUOISE)
+                    container.pack(fill='both', expand=True)
+
+                    label = Label(container, font=FONT_FAMILY, text=f'Editar peso\nPeso para {u} -> {v}', bg=LIGHT_TURQUOISE, fg=LIGHT_GRAY)
+                    label.grid(row=0, column=0, padx=90, pady=15)
+
+                    def close_alert():
+                        new_w = float(weight_entry.get())
+                        alert_box.destroy()
+
+                        if new_w is not None:
+                            self.set_edge_weight(u, v, float(new_w))
+                            # Se não for direcionado, atualiza aresta reversa
+                            if not self.app.directed:
+                                self.set_edge_weight(v, u, float(new_w))
+
+                    weight_entry = Entry(container, bd=0, bg=DARK_TURQUOISE, highlightbackground=DARK_TURQUOISE, fg=LIGHT_GRAY, font=FONT_FAMILY, justify='center')
+                    weight_entry.insert(0, current_w)
+                    
+                    weight_entry.grid(row=1, column=0, padx=90, pady=20)
+
+                    button = Button(container, text='Ok', bd=0, font=FONT_FAMILY, fg=LIGHT_GRAY, activeforeground=LIGHT_GRAY, bg=DARK_TURQUOISE, activebackground=DARK_TURQUOISE, command=close_alert)
+                    button.grid(row=2, column=0, padx=90, ipadx=15, ipady=7)
+
+                    alert_box.mainloop()
                 except:
                     pass
         
