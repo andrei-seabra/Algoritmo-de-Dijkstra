@@ -1,4 +1,4 @@
-from ui_builder import TopMenu, GraphEditor, Sidebar
+cd from ui_builder import TopMenu, GraphEditor, Sidebar
 from tkinter import *
 from settings import *
 from tkinter import messagebox
