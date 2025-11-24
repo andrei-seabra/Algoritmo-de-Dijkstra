@@ -265,8 +265,6 @@ class GraphEditor(Frame):
         # Atualiza se existir, senão adiciona
         for e in self.app.edges:
             if e['u'] == u and e['v'] == v:
-                e['w'] = w
-                self.redraw_all()
                 return
         self.app.edges.append({'u': u, 'v': v, 'w': w})
         self.redraw_all()
